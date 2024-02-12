@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,19 +18,25 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import com.example.mycard.ui.theme.MyCardTheme
 import com.example.mycard.ui.theme.body2
 import com.example.mycard.ui.theme.header5
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,8 +53,53 @@ class MainActivity : ComponentActivity() {
                         LayoutSolution()
                         Spacer(modifier = Modifier.size(20.dp))
                         ConstraintLayoutSolution()
+                        Spacer(modifier = Modifier.size(20.dp))
+                        OnGloballyPositionedSolution()
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun OnGloballyPositionedSolution() {
+    val localDensity = LocalDensity.current
+    var columnHeightInDp by remember { mutableStateOf(0.dp) }
+    Card(
+        modifier =
+            Modifier
+                .padding(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 12.dp)
+                .fillMaxWidth(),
+    ) {
+        Row {
+            Column(
+                modifier =
+                    Modifier
+                        .onGloballyPositioned { coordinates ->
+                            columnHeightInDp = with(localDensity) { coordinates.size.height.toDp() }
+                        }
+                        .weight(1f)
+                        .padding(start = 16.dp, end = 12.dp, top = 16.dp, bottom = 16.dp)
+                        .align(Alignment.CenterVertically),
+            ) {
+                HeaderText()
+                BodyText()
+            }
+
+            Box(
+                modifier = Modifier
+                    .size(100.dp, columnHeightInDp)
+                    .align(Alignment.CenterVertically)
+
+                ,
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.image),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.size(100.dp, 160.dp).align(Alignment.Center),
+                )
             }
         }
     }
@@ -57,9 +109,9 @@ class MainActivity : ComponentActivity() {
 fun LayoutSolution() {
     Card(
         modifier =
-        Modifier
-            .padding(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 12.dp)
-            .fillMaxWidth(),
+            Modifier
+                .padding(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 12.dp)
+                .fillMaxWidth(),
     ) {
         Layout(
             content = {
@@ -83,9 +135,9 @@ fun LayoutSolution() {
                         contentDescription = null,
                         contentScale = ContentScale.FillWidth,
                         modifier =
-                        Modifier
-                            .fillMaxSize()
-                            .align(Alignment.Center),
+                            Modifier
+                                .fillMaxSize()
+                                .align(Alignment.Center),
                     )
                 }
             },
@@ -114,22 +166,23 @@ fun LayoutSolution() {
 fun ConstraintLayoutSolution() {
     Card(
         modifier =
-        Modifier
-            .padding(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 12.dp)
-            .fillMaxWidth(),
+            Modifier
+                .padding(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 12.dp)
+                .fillMaxWidth(),
     ) {
         ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
             val (column, image) = createRefs()
 
             Column(
-                modifier = Modifier
-                    .constrainAs(column) {
-                        start.linkTo(parent.start)
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                        end.linkTo(parent.end)
-                    }
-                    .padding(start = 16.dp, end = 112.dp, top = 16.dp, bottom = 16.dp)
+                modifier =
+                    Modifier
+                        .constrainAs(column) {
+                            start.linkTo(parent.start)
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                            end.linkTo(parent.end)
+                        }
+                        .padding(start = 16.dp, end = 112.dp, top = 16.dp, bottom = 16.dp),
             ) {
                 HeaderText()
                 BodyText()
@@ -139,20 +192,19 @@ fun ConstraintLayoutSolution() {
                 painter = painterResource(R.drawable.image),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .constrainAs(image) {
-                        width = Dimension.value(100.dp)
-                        height = Dimension.value(160.dp)
-                        top.linkTo(parent.top, margin = (-30).dp)
-                        bottom.linkTo(parent.bottom, margin = (-30).dp)
-                        end.linkTo(parent.end)
-                    }
-
+                modifier =
+                    Modifier
+                        .constrainAs(image) {
+                            width = Dimension.value(100.dp)
+                            height = Dimension.value(160.dp)
+                            top.linkTo(parent.top, margin = (-30).dp)
+                            bottom.linkTo(parent.bottom, margin = (-30).dp)
+                            end.linkTo(parent.end)
+                        },
             )
+        }
     }
-}}
-
-
+}
 
 @Preview(showBackground = true)
 @Composable
@@ -166,13 +218,20 @@ fun ConstrainLayoutPrev() {
     ConstraintLayoutSolution()
 }
 
+@Preview(showBackground = true)
+@Composable
+fun OnGloballyPositionedSolutionPreview() {
+    OnGloballyPositionedSolution()
+}
+
 @Composable
 fun HeaderText() {
     Text(
         text = "Lorem ipsum",
-        style = MaterialTheme.typography.header5.copy(
-            color = Color.Black,
-        ),
+        style =
+            MaterialTheme.typography.header5.copy(
+                color = Color.Black,
+            ),
     )
 }
 
@@ -182,10 +241,8 @@ fun BodyText() {
         modifier = Modifier.padding(top = 4.dp),
         text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
         style =
-        MaterialTheme.typography.body2.copy(
-            color = Color.Black,
-        ),
+            MaterialTheme.typography.body2.copy(
+                color = Color.Black,
+            ),
     )
 }
-
-

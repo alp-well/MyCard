@@ -8,9 +8,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.mycard.R
 
-private val ubuntu = FontFamily(
-    Font(R.font.ubuntu),
-)
+private val ubuntu =
+    FontFamily(
+        Font(R.font.ubuntu),
+    )
+
 // Set of Material typography styles to start with
 val Typography =
     Typography(
@@ -38,19 +40,20 @@ val Typography =
         letterSpacing = 0.5.sp
     )
      */
-
     )
 
 val Typography.body2: TextStyle
-    get() = TextStyle(
-        fontWeight = FontWeight.W400,
-        fontSize = 16.sp,
-        //fontFamily = ubuntu
-    )
+    get() =
+        TextStyle(
+            fontWeight = FontWeight.W400,
+            fontSize = 16.sp,
+            // fontFamily = ubuntu
+        )
 
 val Typography.header5: TextStyle
-    get() = TextStyle(
-        fontWeight = FontWeight.W600,
-        fontSize = 16.sp,
-        //fontFamily = ubuntu
-    )
+    get() =
+        TextStyle(
+            fontWeight = FontWeight.W600,
+            fontSize = 16.sp,
+            // fontFamily = ubuntu
+        )

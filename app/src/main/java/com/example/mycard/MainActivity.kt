@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -25,9 +26,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -49,12 +52,10 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background,
                 ) {
                     Column {
-                        Spacer(modifier = Modifier.size(20.dp))
-                        LayoutSolution()
-                        Spacer(modifier = Modifier.size(20.dp))
-                        ConstraintLayoutSolution()
-                        Spacer(modifier = Modifier.size(20.dp))
-                        OnGloballyPositionedSolution()
+                        Spacer(modifier = Modifier.size(8.dp))
+                        WrapContentHeightSolution()
+                        Spacer(modifier = Modifier.size(8.dp))
+                        OnSizeChangedSolution()
                     }
                 }
             }
@@ -88,19 +89,104 @@ fun OnGloballyPositionedSolution() {
             }
 
             Box(
-                modifier = Modifier
-                    .size(100.dp, columnHeightInDp)
-                    .align(Alignment.CenterVertically)
-
-                ,
+                modifier =
+                    Modifier
+                        .size(100.dp, columnHeightInDp)
+                        .align(Alignment.CenterVertically),
             ) {
                 Image(
                     painter = painterResource(R.drawable.image),
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(100.dp, 160.dp).align(Alignment.Center),
+                    modifier =
+                        Modifier
+                            .size(100.dp, 160.dp)
+                            .align(Alignment.Center),
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun OnSizeChangedSolution() {
+    val localDensity = LocalDensity.current
+    var columnHeightInDp by remember { mutableStateOf(0.dp) }
+    Card(
+        modifier =
+            Modifier
+                .padding(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 12.dp)
+                .fillMaxWidth(),
+    ) {
+        Row {
+            Column(
+                modifier =
+                    Modifier
+                        .onSizeChanged { size ->
+                            columnHeightInDp = with(localDensity) { size.height.toDp() }
+                        }
+                        .weight(1f)
+                        .padding(start = 16.dp, end = 12.dp, top = 16.dp, bottom = 16.dp)
+                        .align(Alignment.CenterVertically),
+            ) {
+                HeaderText()
+                BodyText()
+            }
+
+            Box(
+                modifier =
+                    Modifier
+                        .size(100.dp, columnHeightInDp)
+                        .align(Alignment.CenterVertically),
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.image),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier =
+                        Modifier
+                            .size(100.dp, 160.dp)
+                            .align(Alignment.Center),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun WrapContentHeightSolution() {
+    // Unfinished
+    Card(
+        modifier =
+            Modifier
+                .padding(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 12.dp)
+                .fillMaxWidth(),
+    ) {
+        Row(
+            modifier =
+                Modifier
+                    .graphicsLayer { clip = true },
+        ) {
+            Column(
+                modifier =
+                    Modifier
+                        .weight(1f)
+                        .padding(start = 16.dp, end = 12.dp, top = 16.dp, bottom = 16.dp)
+                        .align(Alignment.CenterVertically),
+            ) {
+                HeaderText()
+                BodyText()
+            }
+
+            Image(
+                painter = painterResource(R.drawable.image),
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds,
+                modifier =
+                    Modifier
+                        .width(100.dp)
+                        .wrapContentHeight(unbounded = true, align = Alignment.CenterVertically),
+            )
         }
     }
 }
@@ -214,6 +300,12 @@ fun LayoutPrev() {
 
 @Preview(showBackground = true)
 @Composable
+fun WrapContentHeightSolutionPrev() {
+    WrapContentHeightSolution()
+}
+
+@Preview(showBackground = true)
+@Composable
 fun ConstrainLayoutPrev() {
     ConstraintLayoutSolution()
 }
@@ -222,6 +314,12 @@ fun ConstrainLayoutPrev() {
 @Composable
 fun OnGloballyPositionedSolutionPreview() {
     OnGloballyPositionedSolution()
+}
+
+@Preview(showBackground = true)
+@Composable
+fun OnSizeChangedSolutionPreview() {
+    OnSizeChangedSolution()
 }
 
 @Composable
